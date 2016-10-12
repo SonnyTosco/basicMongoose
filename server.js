@@ -18,8 +18,14 @@ app.set('view engine', 'ejs');
 // Routes
 // Root Request
 app.get('/', function(req, res) {
-    // This is where we will retrieve the users from the database and include them in the view page we will be rendering.
-    res.render('index');
+  User.find({}, function(err, users) {
+    if(err) {
+      console.log('something went wrong');
+    } else {
+        console.log(users);
+        res.render('index', users);
+    }
+  })
 })
 // Add User Request
 app.post('/users', function(req, res) {
@@ -43,11 +49,13 @@ app.post('/users', function(req, res) {
 mongoose.connect('mongodb://localhost/basic_mongoose');
 
 var UserSchema = new mongoose.Schema({
- name: String,
- age: Number
-})
-mongoose.model('User', UserSchema); // We are setting this Schema in our Models as 'User'
-var User = mongoose.model('User') // We are retrieving this Schema from our Models, named 'User'
+ name: {type: String},
+ age: {type: Number}
+}, {timestamps: true})
+// Store the Schema under the name 'User'
+mongoose.model('User', UserSchema);
+// Retrieve the Schema called 'User' and store it to the variable User
+var User = mongoose.model('User');
 
 app.listen(8000, function() {
     console.log("listening on port 8000");
